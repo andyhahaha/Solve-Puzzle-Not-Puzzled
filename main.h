@@ -26,13 +26,13 @@ extern Mat LoadOriginalImg(string);
 
 extern Mat LoadPieceImg(string);
 
-extern vector<float>SIFTAnalysis();
+extern vector<float>SIFTAnalysis(Mat, Mat);
 
-extern vector<float>ColorAnalysis();
+extern vector<float>ColorAnalysis(Mat,Mat);
 
 extern vector<float>MergeResult(vector<float>, vector<float>);
 
 extern void ShowResult(vector<float>);
 
-Mat original, piece;
+extern void ImgDescriptor(Mat,int,int);
 #endif
