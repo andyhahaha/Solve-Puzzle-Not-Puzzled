@@ -28,7 +28,7 @@ extern Mat LoadOriginalImg(string);
 
 extern Mat LoadPieceImg(string);
 
-extern vector<float>SIFTAnalysis(Mat, Mat);
+extern vector<float>SIFTAnalysis(Mat);
 
 extern vector<float>ColorAnalysis(Mat,Mat);
 
@@ -36,5 +36,15 @@ extern vector<float>MergeResult(vector<float>, vector<float>);
 
 extern void ShowResult(vector<float>);
 
+
+
+
 extern vector<ColorInfo> ImgColorDescriptor(Mat, int, int);
+
+
+
+
+extern vector<Mat> ImgSIFTDescriptor(Mat, int, int);
+
+
 #endif
