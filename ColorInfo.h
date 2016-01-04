@@ -13,12 +13,11 @@ class ColorInfo {
 
 public:
 	ColorInfo();
-	ColorInfo(vector<string>, vector<float>);
+	ColorInfo(vector<float>);
+	void ShowColorInfo();
 
 private:
-	vector<string> _Color;
-	vector<float> _proportion;
-
+	vector<float> _colorPrortion;
 };
 
 

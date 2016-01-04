@@ -18,9 +18,11 @@
 #include <opencv2/legacy/legacy.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/nonfree/features2d.hpp>
-
+#include "ColorInfo.h"
 using namespace std;
 using namespace cv;
+
+#define COLOR_RANGE 256
 
 extern Mat LoadOriginalImg(string);
 
@@ -34,5 +36,5 @@ extern vector<float>MergeResult(vector<float>, vector<float>);
 
 extern void ShowResult(vector<float>);
 
-extern void ImgColorDescriptor(Mat, int, int);
+extern vector<ColorInfo> ImgColorDescriptor(Mat, int, int);
 #endif
