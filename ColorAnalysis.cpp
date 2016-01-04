@@ -6,22 +6,52 @@
 void ImgDescriptor(Mat, int, int);
 ColorInfo AnalysisColor(Mat img){
 	int i, j;
-	/*for (i = 0; i < img.rows; i++){
-		for (j = 0; j < img.cols; j++){
+	int h;
+	ColorInfo color;
+	for (i = 0; i < img.rows; ++i){
+
+		Vec3b *p = img.ptr<Vec3b>(i);
+		for (j = 0; j < img.cols; ++j){
+			h = (float)p[j][0] / 255 * 6;
 
 		}
-	}*/
-	ColorInfo color;
-	MatIterator_<Vec3b>imgit, imgend;
-	for (imgit = img.begin<Vec3b>(), imgend = img.end<Vec3b>(); imgit != imgend; ++imgit){
-		cout << (*imgit)[0] << endl;
-
+		printf("\n");
 	}
 	return color;
 }
 
+void PrintColorImage(Mat img, int channel){
 
-void ImgDescriptor(Mat img,int row,int col){
+	int i, j;
+	int h;
+
+	for (i = 0; i < img.rows; ++i){
+
+		Vec3b *p = img.ptr<Vec3b>(i);
+		for (j = 0; j < img.cols; ++j){
+			h = (float)p[j][channel]/255*6;
+			printf("%d ", h);
+		}
+		printf("\n");
+	}
+}
+
+void PrintNonColorImage(Mat img){
+
+	int i, j;
+	for (i = 0; i < img.rows; ++i){
+
+		uchar *p = img.ptr<uchar>(i);
+		for (j = 0; j < img.cols; ++j){
+			printf("%3d ", p[j]);
+		}
+		printf("\n");
+	}
+}
+
+
+
+void ImgColorDescriptor(Mat img, int row, int col){
 
 	Mat hsv;
 	vector<Mat> hsv_split, part_split;
@@ -33,7 +63,7 @@ void ImgDescriptor(Mat img,int row,int col){
 	height = hsv.rows / row;
 	cvtColor(img, hsv, CV_BGR2HSV_FULL);
 
-	cout << hsv.type() << endl;
+	//cout << hsv.type() << endl;
 	/*for (i = 0; i < row; i++){
 		for (j = 0; j < col; j++){
 			
@@ -41,9 +71,9 @@ void ImgDescriptor(Mat img,int row,int col){
 
 		}
 	}*/
-	i = 0;
-	j = 0;
-	part = img(Range(0, hsv.rows / row), Range(0, hsv.cols / col));
+	i = 4;
+	j = 5;
+	part = img(Range(hsv.rows / row*i, hsv.rows / row*(i+1)), Range(hsv.cols / col*j, hsv.cols / col*(j+1)));
 	
 	
 
@@ -64,13 +94,7 @@ void ImgDescriptor(Mat img,int row,int col){
 	imshow("saturation", hsv_split.at(1));
 	imshow("value", hsv_split.at(2));
 
-	for (i = 0; i < part_split.at(0).rows; ++i){
-
-		uchar *p = part_split.at(0).ptr<uchar>(i);
-		for (j = 0; j < part_split.at(0).cols; ++j){
-			cout << p[j] << endl;
-
-		}
-
-	}
+	PrintColorImage(part, 0);
+	
+	
 }

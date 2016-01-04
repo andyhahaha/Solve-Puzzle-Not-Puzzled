@@ -34,5 +34,5 @@ extern vector<float>MergeResult(vector<float>, vector<float>);
 
 extern void ShowResult(vector<float>);
 
-extern void ImgDescriptor(Mat,int,int);
+extern void ImgColorDescriptor(Mat, int, int);
 #endif
