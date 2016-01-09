@@ -23,3 +23,9 @@ void ColorInfo::ShowColorInfo(){
 	}
 
 }
+
+
+float ColorInfo::get_colorProportion(int color){
+
+	return _colorPrortion[color];
+}

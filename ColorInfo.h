@@ -15,7 +15,7 @@ public:
 	ColorInfo();
 	ColorInfo(vector<float>);
 	void ShowColorInfo();
-
+	float ColorInfo::get_colorProportion(int color);
 private:
 	vector<float> _colorPrortion;
 };
