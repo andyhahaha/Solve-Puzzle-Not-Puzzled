@@ -2,7 +2,7 @@
 
 void draw_matches(Mat img1, Mat img2, vector< KeyPoint > keypoints1, vector< KeyPoint > keypoints2, vector< DMatch > matches, string number);
 void symmetryTest(const vector<DMatch> matches1, const vector<DMatch> matches2, vector<DMatch> &symMatches);
-float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_matches, int min_scale);
+float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_matches, float min_scale);
 bool compareDist(const vector<float> &a, const vector<float> &b);
 vector<Mat> eachPart;
 vector<Mat> totalDescriptors;
@@ -52,10 +52,10 @@ vector<Mat> ImgSIFTDescriptor(Mat img, int row, int col)
 vector< vector<float> > SIFTAnalysis(Mat piece)
 {
 	vector< vector<float> > matchesAvgDist, matchesAvgDistSorted;
-	int maxMatches = 0;
-	int maxRow = 0, maxCol = 0, maxIndex = 0;
-	float averageDist = 0.0;
+	float averageDist;
 
+	matchesAvgDist.clear();
+	matchesAvgDistSorted.clear();
 	matchesAvgDist.resize(totalDescriptors.size());
 	matchesAvgDistSorted.resize(totalDescriptors.size());
 
@@ -71,58 +71,38 @@ vector< vector<float> > SIFTAnalysis(Mat piece)
 	detector.detect(img_gray, pieceKeypoints);
 	extractor.compute(img_gray, pieceKeypoints, pieceDescriptors);
 
-	int i = 0, j = 0, k = 0;
+	int i = 0;
 	for (i = 0; i < totalDescriptors.size(); i++)
 	{
 		averageDist = 0.0;
 		if (totalDescriptors[i].rows > 0)
 		{
-			matcher.match(totalDescriptors[i], pieceDescriptors, matches1);
-			matcher.match(pieceDescriptors, totalDescriptors[i], matches2);
-			//draw_matches(piece, eachPart[i], pieceKeypoints, totalKeypoints[i], matches1, to_string(i) + "_1");
-			draw_matches(eachPart[i], piece, totalKeypoints[i], pieceKeypoints, matches1, to_string(i) + "_1");
+			matcher.match(pieceDescriptors, totalDescriptors[i], matches1);
+			matcher.match(totalDescriptors[i], pieceDescriptors, matches2);
 
-			symmetryTest(matches1, matches2, sym_matches);
-			averageDist = get_good_dist_matches(sym_matches, good_matches, 10);
-			/*for (k = 0; k < matches1.size(); k++)
-			{
-				averageDist += matches1[k].distance;
-			}
-			averageDist /= matches1.size();*/
+			//symmetryTest(matches1, matches2, sym_matches);
+			//averageDist = get_good_dist_matches(sym_matches, good_matches, 10);
+			averageDist = get_good_dist_matches(matches1, good_matches, 3);
+			//averageDist = get_good_dist_matches(matches2, good_matches, 10);
 		}
 		else
 		{
+			good_matches.clear();
 			averageDist = 100;
 		}
-			
-		//matcher.match(totalDescriptors[i], pieceDescriptors, matches2);
-		//draw_matches(eachPart[i], piece, totalKeypoints[i], pieceKeypoints, matches2, to_string(i) + "_1");
-		
-
-		//look for symmetry matches
-		//vector< DMatch > sym_matches;
-		//symmetryTest(matches1, matches2, sym_matches);
-		//draw_matches(eachPart[i], piece, totalKeypoints[i], pieceKeypoints, sym_matches, to_string(i) + "_2");
-
-		//-- Use only "good" matches (i.e. whose distance is less than 3*min_dist )
-		//averageDist = get_good_dist_matches(matches1, good_matches, 10);
-		//draw_matches(eachPart[i], piece, totalKeypoints[i], pieceKeypoints, good_matches, to_string(i) + "_1");
 
 		matchesAvgDist[i].push_back((float)i);
 		matchesAvgDist[i].push_back(averageDist);
+		matchesAvgDist[i].push_back(good_matches.size());
 	}
-	//matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
-	//sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), compareDist);
 
-	//for (i = 0; i < matchesAvgDistSorted.size(); i++)
-	//{
-		//cout << "matchesAvgDistSorted " << i << " : " << matchesAvgDistSorted[i][0] << endl;
-		/*cout << "matchesAvgDistSorted " << 0 << " : " << matchesAvgDistSorted[0][0] << endl;
-		cout << "matchesAvgDistSorted " << 1 << " : " << matchesAvgDistSorted[1][0] << endl;
-		cout << "matchesAvgDistSorted " << 2 << " : " << matchesAvgDistSorted[2][0] << endl;
-		cout << "matchesAvgDistSorted " << 3 << " : " << matchesAvgDistSorted[3][0] << endl;
-		cout << "matchesAvgDistSorted " << 4 << " : " << matchesAvgDistSorted[4][0] << endl;*/
-	//}
+	matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
+	sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), compareDist);
+
+	for (i = 0; i < matchesAvgDistSorted.size(); i++)
+	{
+		cout << "matchesAvgDistSorted " << i << " : " << matchesAvgDistSorted[i][0] << "  " << matchesAvgDistSorted[i][1] << "  " << matchesAvgDistSorted[i][2] << endl;
+	}
 	
 	return matchesAvgDist;
 }
@@ -163,7 +143,7 @@ void symmetryTest(const vector<DMatch> matches1, const vector<DMatch> matches2, 
 }
 
 
-float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_matches, int min_scale)
+float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_matches, float min_scale)
 {
 	double max_dist = 0;
 	double min_dist = 100;
@@ -182,7 +162,7 @@ float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_mat
 	good_matches.clear();
 	for (int i = 0; i < matches.size(); i++)
 	{
-		if (matches[i].distance < min_scale * min_dist)
+		if (matches[i].distance < min_dist* min_scale)
 		{
 			good_matches.push_back(matches[i]);
 			average_dist += matches[i].distance;
