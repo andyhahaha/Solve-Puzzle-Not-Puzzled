@@ -8,6 +8,7 @@ vector <vector<float>> ColorSort(vector<ColorInfo> origin, ColorInfo piece);
 ColorInfo AnalysisColor(Mat img);
 ColorInfo AnalysisColorPNG(Mat img);
 vector <vector<float>> ColorAnalysis(Mat, Mat, int, int);
+vector<ColorInfo> OriginColorInfo;
 
 void ShowImageColorInfo(Mat img,vector<ColorInfo> color,int row,int col){
 
@@ -19,14 +20,14 @@ void ShowImageColorInfo(Mat img,vector<ColorInfo> color,int row,int col){
 	{
 		
 		//printf("%d-%d\n", i / col + 1, i%col+1);
-		//it->ShowColorInfo(); 
-		part = img(Range((int)((i / col)*(float)img.rows / row), (int)((float)img.rows / row*((i / col) + 1))), Range((int)((i%col)*(float)img.cols / col), (int)((float)img.cols / col*((i%col) + 1))));	//會越來越小
+		cout << i << "  " << endl;
+		it->ShowColorInfo(); 
+		//part = img(Range((int)((i / col)*(float)img.rows / row), (int)((float)img.rows / row*((i / col) + 1))), Range((int)((i%col)*(float)img.cols / col), (int)((float)img.cols / col*((i%col) + 1))));	//會越來越小
 		//namedWindow("part", CV_WINDOW_AUTOSIZE);
 		//imshow("part", part);
 		//printf("\n\n");
 		i++;
 		//waitKey(1);
-		i = i;
 	}
 	
 
@@ -35,7 +36,7 @@ void ShowImageColorInfo(Mat img,vector<ColorInfo> color,int row,int col){
 ColorInfo AnalysisColorPNG(Mat img){
 	int i, j, m;
 	int N = 15;    /*class the color into N colors*/
-	int h;
+	int h,size=0;
 
 	vector<float> colorArray(N, 0);
 	map<int, float> colorPrortion;
@@ -65,11 +66,12 @@ ColorInfo AnalysisColorPNG(Mat img){
 			}
 			else{
 				colorArray[h]++;
+				size++;
 			}
 		}
 	}
 	for (i = 0; i < colorArray.size(); i++){
-		colorArray[i] /= (img.rows*img.cols);
+		colorArray[i] /= size;
 	}
 	ColorInfo colorInfo(colorArray);
 	colorInfo.ShowColorInfo();
@@ -182,7 +184,6 @@ vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col){
 	Mat hsv;
 	vector<Mat> hsv_split, part_split;
 	Mat part;
-	vector<ColorInfo> color;
 	int i, j;
 	int width, height;
 	width = hsv.cols / col;
@@ -194,11 +195,11 @@ vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col){
 		for (j = 0; j < col; j++){
 			
 			part = hsv(Range(hsv.rows / row*i, hsv.rows / row*(i + 1)), Range(hsv.cols / col*j, hsv.cols / col*(j + 1)));
-			color.push_back(AnalysisColor(part));
+			OriginColorInfo.push_back(AnalysisColor(part));
 		}
 	}
 
-	ShowImageColorInfo(img,color,row,col);
+	//ShowImageColorInfo(img,color,row,col);
 
 
 
@@ -219,7 +220,7 @@ vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col){
 	*/
 	//PrintColorImage(part, 0);
 
-	return color;
+	return OriginColorInfo;
 	
 }
 bool compare_sortting(const vector<float> first, const vector<float> second)
@@ -242,7 +243,7 @@ vector <vector<float>> ColorCompareArray(vector<ColorInfo> origin, ColorInfo pie
 		color_array[i].push_back((float)i);
 		color_array[i].push_back(compare);
 
-		cout << color_array[i][0] << "   " << color_array[i][1] << endl;
+	//	cout <<"color  " <<color_array[i][0] << "   " << color_array[i][1] << endl;
 
 	}
 
@@ -255,9 +256,9 @@ vector <vector<float>> ColorSort(vector <vector<float>> color_sort_array){
 
 	sort(color_sort_array.begin(), color_sort_array.end(), compare_sortting);
 
-	for (i = 0; i < 27; i++)
+	for (i = 0; i < color_sort_array.size(); i++)
 	{
-		cout << color_sort_array[i][0] << " : " << color_sort_array[i][1] << endl;
+		cout <<i+1<<"  color sort  " <<color_sort_array[i][0] << " : " << color_sort_array[i][1] << endl;
 	}
 
 	return color_sort_array;
@@ -267,14 +268,12 @@ vector <vector<float>> ColorSort(vector <vector<float>> color_sort_array){
 
 vector <vector<float>> ColorAnalysis(Mat original, Mat piece, int row, int col){
 
-	vector<ColorInfo> original_descriptor;
 	vector <vector<float>> colorInfo;
 	Mat piece_hsv;
 	ColorInfo pieceColor;
-	original_descriptor = ImgColorDescriptor(original, row, col);
 	cvtColor(piece, piece_hsv, CV_BGR2HSV_FULL);
 	pieceColor = AnalysisColorPNG(piece_hsv);
-	colorInfo = ColorCompareArray(original_descriptor, pieceColor);
-	//ColorSort(&colorInfo);
+	colorInfo = ColorCompareArray( OriginColorInfo, pieceColor);
+	ColorSort(colorInfo);
 	return colorInfo;
 }

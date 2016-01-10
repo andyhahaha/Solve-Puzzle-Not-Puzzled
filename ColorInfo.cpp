@@ -17,10 +17,13 @@ ColorInfo::ColorInfo(vector<float> colorPrortion){
 
 void ColorInfo::ShowColorInfo(){
 	int i;
+	float total=0.0;
 	for (i = 0; i < _colorPrortion.size(); i++){
 		printf("%2d", i);
 		cout << "   " << _colorPrortion[i] << endl;
+		total += _colorPrortion[i];
 	}
+	cout << "total = " << total << endl;
 
 }
 

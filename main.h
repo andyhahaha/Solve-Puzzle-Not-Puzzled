@@ -25,29 +25,17 @@ using namespace cv;
 
 #define COLOR_RANGE 256
 
-extern Mat LoadImg(string);
-
-
-extern vector<float>SIFTAnalysis(Mat);
-
-extern vector<float>ColorAnalysis(Mat,Mat);
-
-extern vector<float>MergeResult(vector<float>, vector<float>);
-
-extern void ShowResult(vector<float>);
-
-extern void PrintColorImage(Mat img, int channel);
-
-
-extern vector<ColorInfo> ImgColorDescriptor(Mat, int, int);
-
-
-
 
 extern vector<Mat> ImgSIFTDescriptor(Mat, int, int);
-extern ColorInfo AnalysisColor(Mat);
-extern vector <vector<float>> ColorSort(vector<ColorInfo> , ColorInfo );
-ColorInfo AnalysisColorPNG(Mat img);
+extern vector< vector<float> > SIFTAnalysis(Mat piece);
+
+vector< vector<float> >MergeResult(vector< vector<float> >, vector< vector<float> >);
+
+void ShowResult(vector< vector<float> >);
+
 extern vector <vector<float>> ColorAnalysis(Mat , Mat ,int ,int );
+
+extern 	vector<ColorInfo> ImgColorDescriptor(Mat , int , int );
+
 
 #endif
