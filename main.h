@@ -26,7 +26,8 @@ extern Mat LoadOriginalImg(string);
 
 extern Mat LoadPieceImg(string);
 
-extern vector<float>SIFTAnalysis(Mat);
+extern vector< vector<float> >SIFTAnalysis(Mat);
+extern void SIFTAnalysis2(Mat, Mat);
 
 extern vector<float>ColorAnalysis(Mat,Mat);
 
