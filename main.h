@@ -19,23 +19,24 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/nonfree/features2d.hpp>
 
+#include "ColorInfo.h"
 using namespace std;
 using namespace cv;
 
-extern Mat LoadOriginalImg(string);
+#define COLOR_RANGE 256
 
-extern Mat LoadPieceImg(string);
-
-extern vector< vector<float> >SIFTAnalysis(Mat);
-extern void SIFTAnalysis2(Mat, Mat);
-
-extern vector<float>ColorAnalysis(Mat,Mat);
-
-extern vector<float>MergeResult(vector<float>, vector<float>);
-
-extern void ShowResult(vector<float>);
 
 extern vector<Mat> ImgSIFTDescriptor(Mat, int, int);
+extern vector< vector<float> > SIFTAnalysis(Mat piece);
+extern void SIFTAnalysis2(Mat, Mat);
 
-extern void ImgColorDescriptor(Mat, int, int);
+vector< vector<float> >MergeResult(vector< vector<float> >, vector< vector<float> >);
+
+void ShowResult(vector< vector<float> >);
+
+extern vector <vector<float>> ColorAnalysis(Mat , Mat ,int ,int );
+
+extern 	vector<ColorInfo> ImgColorDescriptor(Mat , int , int );
+
+
 #endif

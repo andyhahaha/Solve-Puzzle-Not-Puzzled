@@ -51,8 +51,6 @@ vector<Mat> ImgSIFTDescriptor(Mat img, int row, int col)
 
 vector< vector<float> > SIFTAnalysis(Mat piece)
 {
-	//vector<int> matchesAmount;
-	//vector<float> matchesPercent;
 	vector< vector<float> > matchesAvgDist, matchesAvgDistSorted;
 	int maxMatches = 0;
 	int maxRow = 0, maxCol = 0, maxIndex = 0;
@@ -112,25 +110,21 @@ vector< vector<float> > SIFTAnalysis(Mat piece)
 
 		matchesAvgDist[i].push_back((float)i);
 		matchesAvgDist[i].push_back(averageDist);
-		cout << "i = " << i << endl;
 	}
-	matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
-	sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), compareDist);
+	//matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
+	//sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), compareDist);
 
-	for (i = 0; i < matchesAvgDistSorted.size(); i++)
-	{
-		cout << "matchesAvgDistSorted " << i << " : " << matchesAvgDistSorted[i][0] << endl;
+	//for (i = 0; i < matchesAvgDistSorted.size(); i++)
+	//{
+		//cout << "matchesAvgDistSorted " << i << " : " << matchesAvgDistSorted[i][0] << endl;
 		/*cout << "matchesAvgDistSorted " << 0 << " : " << matchesAvgDistSorted[0][0] << endl;
 		cout << "matchesAvgDistSorted " << 1 << " : " << matchesAvgDistSorted[1][0] << endl;
 		cout << "matchesAvgDistSorted " << 2 << " : " << matchesAvgDistSorted[2][0] << endl;
 		cout << "matchesAvgDistSorted " << 3 << " : " << matchesAvgDistSorted[3][0] << endl;
 		cout << "matchesAvgDistSorted " << 4 << " : " << matchesAvgDistSorted[4][0] << endl;*/
-	}
+	//}
 	
-	eachPart.clear();
-	totalDescriptors.clear();
-	totalKeypoints.clear();
-	return matchesAvgDistSorted;
+	return matchesAvgDist;
 }
 
 

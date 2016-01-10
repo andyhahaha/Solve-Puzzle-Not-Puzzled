@@ -8,10 +8,27 @@ ColorInfo::ColorInfo(){
 }
 
 
-ColorInfo::ColorInfo(vector<string> Color, vector<float> proportion){
+ColorInfo::ColorInfo(vector<float> colorPrortion){
 
-	_Color.assign(Color.begin(), Color.end());
-	_proportion.assign(proportion.begin(), proportion.end());
+	_colorPrortion.assign(colorPrortion.begin(), colorPrortion.end());
+
+}
 
 
+void ColorInfo::ShowColorInfo(){
+	int i;
+	float total=0.0;
+	for (i = 0; i < _colorPrortion.size(); i++){
+		printf("%2d", i);
+		cout << "   " << _colorPrortion[i] << endl;
+		total += _colorPrortion[i];
+	}
+	cout << "total = " << total << endl;
+
+}
+
+
+float ColorInfo::get_colorProportion(int color){
+
+	return _colorPrortion[color];
 }
