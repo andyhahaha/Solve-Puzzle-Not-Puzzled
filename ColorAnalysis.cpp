@@ -1,13 +1,12 @@
 #include "D:\Solve-Puzzle-Not-Puzzled\main.h"
 #include "ColorInfo.h"
-#include <map>
 
 
-void ImgDescriptor(Mat, int, int);
+vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col, int colorNumber);
 vector <vector<float>> ColorSort(vector<ColorInfo> origin, ColorInfo piece);
-ColorInfo AnalysisColor(Mat img);
-ColorInfo AnalysisColorPNG(Mat img);
-vector <vector<float>> ColorAnalysis(Mat, Mat, int, int);
+ColorInfo AnalysisColor(Mat img,int);
+ColorInfo AnalysisColorPNG(Mat img,int);
+vector <vector<float>> ColorAnalysis(Mat, Mat, int, int,int);
 vector<ColorInfo> OriginColorInfo;
 
 void ShowImageColorInfo(Mat img,vector<ColorInfo> color,int row,int col){
@@ -33,9 +32,9 @@ void ShowImageColorInfo(Mat img,vector<ColorInfo> color,int row,int col){
 
 }
 
-ColorInfo AnalysisColorPNG(Mat img){
+ColorInfo AnalysisColorPNG(Mat img, int colorNumber){
 	int i, j, m;
-	int N = 15;    /*class the color into N colors*/
+	int N = colorNumber;    /*class the color into N colors*/
 	int h,size=0;
 
 	vector<float> colorArray(N, 0);
@@ -44,15 +43,15 @@ ColorInfo AnalysisColorPNG(Mat img){
 
 		Vec3b *p = img.ptr<Vec3b>(i);
 		for (j = 0; j < img.cols; ++j){
-			if (p[j][1] < COLOR_RANGE / 8){
+			if (p[j][1] < COLOR_RANGE / 6){
 				if (p[j][2] < COLOR_RANGE / 3){				//black
-					h = 14;
+					h = N-1;
 				}
 				else if (p[j][2] > 2 * COLOR_RANGE / 3){	//white
-					h = 12;
+					h = N-3;
 				}
 				else{										//gray
-					h = 13;
+					h = N-2;
 				}
 
 			}
@@ -79,9 +78,9 @@ ColorInfo AnalysisColorPNG(Mat img){
 
 }
 
-ColorInfo AnalysisColor(Mat img){
+ColorInfo AnalysisColor(Mat img, int colorNumber){
 	int i, j,m;
-	int N = 15;    /*class the color into N colors*/
+	int N = colorNumber;    /*class the color into N colors*/
 	int h;
 	
 	vector<float> colorArray(N,0);
@@ -90,15 +89,15 @@ ColorInfo AnalysisColor(Mat img){
 
 		Vec3b *p = img.ptr<Vec3b>(i);
 		for (j = 0; j < img.cols; ++j){
-			if (p[j][1] < COLOR_RANGE / 8){
+			if (p[j][1] < COLOR_RANGE / 6){
 				if (p[j][2] < COLOR_RANGE / 3){				//black
-					h = 14;
+					h = N-1;
 				}
 				else if (p[j][2] > 2 * COLOR_RANGE / 3){	//white
-					h = 12;
+					h = N-3;
 				}
 				else{										//gray
-					h = 13;
+					h = N-2;
 				}
 
 			}
@@ -116,6 +115,7 @@ ColorInfo AnalysisColor(Mat img){
 	ColorInfo colorInfo(colorArray);
 	return colorInfo;
 }
+
 
 void PrintColorImage(Mat img, int channel){
 
@@ -146,10 +146,10 @@ void PrintNonColorImage(Mat img){
 	}
 }
 
-float ColorCompare(ColorInfo c1, ColorInfo c2){
+float ColorCompare(ColorInfo c1, ColorInfo c2,int colorNumber){
 	
 	int i;
-	int size = 15;
+	int size = colorNumber;
  	float compare = 0.0,a;
 	
 	for (i = 0; i < size; i++){
@@ -164,12 +164,12 @@ float ColorCompare(ColorInfo c1, ColorInfo c2){
 }
 
 
-ColorInfo PieceColorDescriptor(Mat img){
+ColorInfo PieceColorDescriptor(Mat img,int colorNumber){
 
 	Mat hsv;
 	cvtColor(img, hsv, CV_BGR2HSV_FULL);
 
-	ColorInfo pieceColor = AnalysisColor(hsv);
+	ColorInfo pieceColor = AnalysisColor(hsv, colorNumber);
 	pieceColor.ShowColorInfo();
 
 	return pieceColor;
@@ -179,27 +179,32 @@ ColorInfo PieceColorDescriptor(Mat img){
 
 
 
-vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col){
+vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col,int colorNumber){
 
 	Mat hsv;
 	vector<Mat> hsv_split, part_split;
-	Mat part;
+	Mat part,part2;
 	int i, j;
 	int width, height;
 	width = hsv.cols / col;
 	height = hsv.rows / row;
 	cvtColor(img, hsv, CV_BGR2HSV_FULL);
-
+	OriginColorInfo.clear();
 	//cout << hsv.type() << endl;
 	for (i = 0; i < row; i++){
 		for (j = 0; j < col; j++){
 			
 			part = hsv(Range(hsv.rows / row*i, hsv.rows / row*(i + 1)), Range(hsv.cols / col*j, hsv.cols / col*(j + 1)));
-			OriginColorInfo.push_back(AnalysisColor(part));
+			part2 = img(Range(img.rows / row*i, img.rows / row*(i + 1)), Range(img.cols / col*j, img.cols / col*(j + 1)));
+			OriginColorInfo.push_back(AnalysisColor(part, colorNumber));
+			namedWindow("part", CV_WINDOW_AUTOSIZE);
+			imshow("part", part2);
+			waitKey(1);
+			i = i;
 		}
 	}
 
-	//ShowImageColorInfo(img,color,row,col);
+//	ShowImageColorInfo(img, OriginColorInfo, row, col);
 
 
 
@@ -223,13 +228,17 @@ vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col){
 	return OriginColorInfo;
 	
 }
+
+
+
+
 bool compare_sortting(const vector<float> first, const vector<float> second)
 {
 	return first[1]<second[1];
 }
 
 
-vector <vector<float>> ColorCompareArray(vector<ColorInfo> origin, ColorInfo piece){
+vector <vector<float>> ColorCompareArray(vector<ColorInfo> origin, ColorInfo piece,int colorNumber){
 
 
 	vector <vector<float>> color_array;
@@ -238,7 +247,7 @@ vector <vector<float>> ColorCompareArray(vector<ColorInfo> origin, ColorInfo pie
 	float compare;
 	for (i = 0; i < origin.size(); i++){
 
-		compare = ColorCompare(origin[i], piece);
+		compare = ColorCompare(origin[i], piece, colorNumber);
 		color_array.push_back(colorInfo);
 		color_array[i].push_back((float)i);
 		color_array[i].push_back(compare);
@@ -266,14 +275,15 @@ vector <vector<float>> ColorSort(vector <vector<float>> color_sort_array){
 }
 
 
-vector <vector<float>> ColorAnalysis(Mat original, Mat piece, int row, int col){
+vector <vector<float>> ColorAnalysis(Mat original, Mat piece, int row, int col,int colorNumber){
 
 	vector <vector<float>> colorInfo;
 	Mat piece_hsv;
 	ColorInfo pieceColor;
 	cvtColor(piece, piece_hsv, CV_BGR2HSV_FULL);
-	pieceColor = AnalysisColorPNG(piece_hsv);
-	colorInfo = ColorCompareArray( OriginColorInfo, pieceColor);
+	pieceColor = AnalysisColorPNG(piece_hsv, colorNumber);
+	colorInfo = ColorCompareArray(OriginColorInfo, pieceColor, colorNumber);
 	ColorSort(colorInfo);
 	return colorInfo;
 }
+

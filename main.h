@@ -33,9 +33,9 @@ vector< vector<float> >MergeResult(vector< vector<float> >, vector< vector<float
 
 void ShowResult(vector< vector<float> >);
 
-extern vector <vector<float>> ColorAnalysis(Mat , Mat ,int ,int );
+extern vector <vector<float>> ColorAnalysis(Mat , Mat ,int ,int ,int);
 
-extern 	vector<ColorInfo> ImgColorDescriptor(Mat , int , int );
+extern 	vector<ColorInfo> ImgColorDescriptor(Mat , int , int,int );
 
 
 #endif
