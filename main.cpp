@@ -7,11 +7,6 @@ Mat LoadImg(string path){
 	return img;
 }
 
-Mat LoadPieceImg(string path){
-	Mat img;
-	img = imread(path);
-	return img;
-}
 
 bool sortCompare(const vector<float> &first, const vector<float> &second)
 {
@@ -130,7 +125,7 @@ void main()
 	int row = 6, col = 9;	/*luck apple:24x42 pieces     fox:6x9 pieces */
 	
 	//prepare original image
-	img_path = "D:\\大學\\DSP_LAB\\Solve-Puzzle-Not-Puzzled\\resource\\fox.jpg";
+	img_path = "D:\\Solve-Puzzle-Not-Puzzled\\resource\\fox.jpg";
 	original = LoadImg(img_path);
 
 	//analysis original image
@@ -147,7 +142,7 @@ void main()
 		cout << number << endl;
 
 		//prepare piece image
-		piece_path = "D:\\大學\\DSP_LAB\\Solve-Puzzle-Not-Puzzled\\resource\\fox\\fox" + to_string(number) + ".png";
+		piece_path = "D:\\Solve-Puzzle-Not-Puzzled\\resource\\foxPieces\\fox" + to_string(number) + ".png";
 		piece = LoadImg(piece_path);
 		cout << "find " << piece_path << endl;
 		namedWindow("拼圖", CV_WINDOW_AUTOSIZE);

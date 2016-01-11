@@ -28,7 +28,7 @@ using namespace cv;
 bool sortCompare(const vector<float> &first, const vector<float> &second);
 
 extern void ImgSIFTDescriptor(Mat, int, int);
-extern vector< vector<float> > SIFTAnalysis(Mat, vector <vector<float>>);
+extern vector <vector<float>> SIFTAnalysis(Mat, vector <vector<float>>);
 extern void SIFTAnalysis2(Mat, Mat);
 
 vector< vector<float> >MergeResult(vector< vector<float> >, vector< vector<float> >);

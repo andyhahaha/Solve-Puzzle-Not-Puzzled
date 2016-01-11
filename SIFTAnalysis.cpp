@@ -47,9 +47,9 @@ void ImgSIFTDescriptor(Mat img, int row, int col)
 
 
 
-vector< vector<float> > SIFTAnalysis(Mat piece, vector <vector<float>> colorResult)
+vector < vector<float>> SIFTAnalysis(Mat piece, vector <vector<float>> colorResult)
 {
-	vector< vector<float> > matchesAvgDist, matchesAvgDistSorted;
+	vector < vector<float>> matchesAvgDist, matchesAvgDistSorted;
 	float minDist = 100.0, maxDist = 0.0;
 	float averageDist;
 
@@ -78,12 +78,7 @@ vector< vector<float> > SIFTAnalysis(Mat piece, vector <vector<float>> colorResu
 		if (i <= colorResult.size() / 2 && totalDescriptors[index].rows > 0)
 		{
 			matcher.match(pieceDescriptors, totalDescriptors[index], matches1);
-			//matcher.match(totalDescriptors[index], pieceDescriptors, matches2);
-
-			//symmetryTest(matches1, matches2, sym_matches);
-			//averageDist = get_good_dist_matches(sym_matches, good_matches, 10);
 			averageDist = get_good_dist_matches(matches1, good_matches, 3);
-			//averageDist = get_good_dist_matches(matches2, good_matches, 10);
 		}
 		else
 		{
@@ -99,24 +94,19 @@ vector< vector<float> > SIFTAnalysis(Mat piece, vector <vector<float>> colorResu
 		if (averageDist < minDist)
 			minDist = averageDist;
 	}
-	/*float n = 0;
-	for (i = 0; i < matchesAvgDist.size(); i++)
-	{
-		if (matchesAvgDist[i][1] == 100)
-			n++;
-	}*/
+
 	for (i = 0; i < matchesAvgDist.size(); i++)
 	{
 		if (matchesAvgDist[i][1] != 100)
 			matchesAvgDist[i][1] = (matchesAvgDist[i][1] - minDist)*0.99 / (maxDist - minDist) + 0.01;
-
 	}
-	matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
+
+	/*matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
 	sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), sortCompare);
 	for (i = 0; i < matchesAvgDistSorted.size(); i++)
 	{
 		cout << "matchesAvgDistSorted " << i << " : " << matchesAvgDistSorted[i][0] << "  " << matchesAvgDistSorted[i][1] << "  " << matchesAvgDistSorted[i][2] << endl;
-	}
+	}*/
 	return matchesAvgDist;
 }
 
@@ -178,6 +168,8 @@ float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_mat
 	average_dist /= (float)matches.size();
 	return average_dist;
 }
+
+
 
 void SIFTAnalysis2(Mat original, Mat piece)
 {
