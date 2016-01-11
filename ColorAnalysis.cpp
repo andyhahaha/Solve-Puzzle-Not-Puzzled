@@ -99,13 +99,10 @@ ColorInfo AnalysisColor(Mat img, int colorNumber){
 				else{										//gray
 					h = N-2;
 				}
-
 			}
 			else{
 				h = (float)p[j][0] / COLOR_RANGE * N;
-
 			}
-		
 			colorArray[h]++;
 		}
 	}
@@ -159,8 +156,6 @@ float ColorCompare(ColorInfo c1, ColorInfo c2,int colorNumber){
 		compare = compare + a;
 	}
 	return compare;
-	
-
 }
 
 
@@ -173,7 +168,6 @@ ColorInfo PieceColorDescriptor(Mat img,int colorNumber){
 	pieceColor.ShowColorInfo();
 
 	return pieceColor;
-
 }
 
 
@@ -197,10 +191,9 @@ vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col,int colorNumber){
 			part = hsv(Range(hsv.rows / row*i, hsv.rows / row*(i + 1)), Range(hsv.cols / col*j, hsv.cols / col*(j + 1)));
 			part2 = img(Range(img.rows / row*i, img.rows / row*(i + 1)), Range(img.cols / col*j, img.cols / col*(j + 1)));
 			OriginColorInfo.push_back(AnalysisColor(part, colorNumber));
-			namedWindow("part", CV_WINDOW_AUTOSIZE);
+			/*namedWindow("part", CV_WINDOW_AUTOSIZE);
 			imshow("part", part2);
-			waitKey(1);
-			i = i;
+			waitKey(1);*/
 		}
 	}
 
@@ -226,34 +219,33 @@ vector<ColorInfo> ImgColorDescriptor(Mat img, int row, int col,int colorNumber){
 	//PrintColorImage(part, 0);
 
 	return OriginColorInfo;
-	
-}
-
-
-
-
-bool compare_sortting(const vector<float> first, const vector<float> second)
-{
-	return first[1]<second[1];
 }
 
 
 vector <vector<float>> ColorCompareArray(vector<ColorInfo> origin, ColorInfo piece,int colorNumber){
 
-
 	vector <vector<float>> color_array;
 	vector<float> colorInfo;
 	int i;
-	float compare;
-	for (i = 0; i < origin.size(); i++){
-
+	float compare, max = 0.0, min = 100.0;
+	for (i = 0; i < origin.size(); i++)
+	{
 		compare = ColorCompare(origin[i], piece, colorNumber);
+		colorInfo.push_back((float)i);
+		colorInfo.push_back(compare);
 		color_array.push_back(colorInfo);
-		color_array[i].push_back((float)i);
-		color_array[i].push_back(compare);
+		colorInfo.clear();
 
-	//	cout <<"color  " <<color_array[i][0] << "   " << color_array[i][1] << endl;
+		if (compare > max)
+			max = compare;
+		if (compare < min)
+			min = compare;
+		//cout <<"color  " <<color_array[i][0] << "   " << color_array[i][1] << endl;
+	}
 
+	for (i = 0; i < color_array.size(); i++)
+	{
+		color_array[i][1] = (color_array[i][1] - min)*0.99 / (max - min) + 0.01;
 	}
 
 	return color_array;
@@ -262,8 +254,7 @@ vector <vector<float>> ColorCompareArray(vector<ColorInfo> origin, ColorInfo pie
 vector <vector<float>> ColorSort(vector <vector<float>> color_sort_array){
 
 	int i;
-
-	sort(color_sort_array.begin(), color_sort_array.end(), compare_sortting);
+	sort(color_sort_array.begin(), color_sort_array.end(), sortCompare);
 
 	for (i = 0; i < color_sort_array.size(); i++)
 	{
@@ -271,7 +262,6 @@ vector <vector<float>> ColorSort(vector <vector<float>> color_sort_array){
 	}
 
 	return color_sort_array;
-
 }
 
 

@@ -25,9 +25,10 @@ using namespace cv;
 
 #define COLOR_RANGE 256
 
+bool sortCompare(const vector<float> &first, const vector<float> &second);
 
-extern vector<Mat> ImgSIFTDescriptor(Mat, int, int);
-extern vector< vector<float> > SIFTAnalysis(Mat piece);
+extern void ImgSIFTDescriptor(Mat, int, int);
+extern vector< vector<float> > SIFTAnalysis(Mat, vector <vector<float>>);
 extern void SIFTAnalysis2(Mat, Mat);
 
 vector< vector<float> >MergeResult(vector< vector<float> >, vector< vector<float> >);

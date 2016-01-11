@@ -3,12 +3,11 @@
 void draw_matches(Mat img1, Mat img2, vector< KeyPoint > keypoints1, vector< KeyPoint > keypoints2, vector< DMatch > matches, string number);
 void symmetryTest(const vector<DMatch> matches1, const vector<DMatch> matches2, vector<DMatch> &symMatches);
 float get_good_dist_matches(vector< DMatch > matches, vector< DMatch > &good_matches, float min_scale);
-bool compareDist(const vector<float> &a, const vector<float> &b);
 vector<Mat> eachPart;
 vector<Mat> totalDescriptors;
 vector < vector < KeyPoint > > totalKeypoints;
 
-vector<Mat> ImgSIFTDescriptor(Mat img, int row, int col)
+void ImgSIFTDescriptor(Mat img, int row, int col)
 {
 	eachPart.clear();
 	totalDescriptors.clear();
@@ -44,14 +43,14 @@ vector<Mat> ImgSIFTDescriptor(Mat img, int row, int col)
 		}
 		cout << "SIFT descriptors finish. "<< endl;
 	}
-	return totalDescriptors;
 }
 
 
 
-vector< vector<float> > SIFTAnalysis(Mat piece)
+vector< vector<float> > SIFTAnalysis(Mat piece, vector <vector<float>> colorResult)
 {
 	vector< vector<float> > matchesAvgDist, matchesAvgDistSorted;
+	float minDist = 100.0, maxDist = 0.0;
 	float averageDist;
 
 	matchesAvgDist.clear();
@@ -71,14 +70,15 @@ vector< vector<float> > SIFTAnalysis(Mat piece)
 	detector.detect(img_gray, pieceKeypoints);
 	extractor.compute(img_gray, pieceKeypoints, pieceDescriptors);
 
-	int i = 0;
-	for (i = 0; i < totalDescriptors.size(); i++)
+	int i = 0, index = 0;
+	for (i = 0; i < colorResult.size(); i++)
 	{
+		index = colorResult[i][0];
 		averageDist = 0.0;
-		if (totalDescriptors[i].rows > 0)
+		if (i <= colorResult.size() / 2 && totalDescriptors[index].rows > 0)
 		{
-			matcher.match(pieceDescriptors, totalDescriptors[i], matches1);
-			matcher.match(totalDescriptors[i], pieceDescriptors, matches2);
+			matcher.match(pieceDescriptors, totalDescriptors[index], matches1);
+			//matcher.match(totalDescriptors[index], pieceDescriptors, matches2);
 
 			//symmetryTest(matches1, matches2, sym_matches);
 			//averageDist = get_good_dist_matches(sym_matches, good_matches, 10);
@@ -90,27 +90,34 @@ vector< vector<float> > SIFTAnalysis(Mat piece)
 			good_matches.clear();
 			averageDist = 100;
 		}
+		matchesAvgDist[index].push_back((float)index);
+		matchesAvgDist[index].push_back(averageDist);
+		matchesAvgDist[index].push_back(good_matches.size());
 
-		matchesAvgDist[i].push_back((float)i);
-		matchesAvgDist[i].push_back(averageDist);
-		matchesAvgDist[i].push_back(good_matches.size());
+		if (averageDist > maxDist && averageDist != 100)
+			maxDist = averageDist;
+		if (averageDist < minDist)
+			minDist = averageDist;
 	}
+	/*float n = 0;
+	for (i = 0; i < matchesAvgDist.size(); i++)
+	{
+		if (matchesAvgDist[i][1] == 100)
+			n++;
+	}*/
+	for (i = 0; i < matchesAvgDist.size(); i++)
+	{
+		if (matchesAvgDist[i][1] != 100)
+			matchesAvgDist[i][1] = (matchesAvgDist[i][1] - minDist)*0.99 / (maxDist - minDist) + 0.01;
 
+	}
 	matchesAvgDistSorted.assign(matchesAvgDist.begin(), matchesAvgDist.end());
-	sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), compareDist);
-
+	sort(matchesAvgDistSorted.begin(), matchesAvgDistSorted.end(), sortCompare);
 	for (i = 0; i < matchesAvgDistSorted.size(); i++)
 	{
 		cout << "matchesAvgDistSorted " << i << " : " << matchesAvgDistSorted[i][0] << "  " << matchesAvgDistSorted[i][1] << "  " << matchesAvgDistSorted[i][2] << endl;
 	}
-	
 	return matchesAvgDist;
-}
-
-
-bool compareDist(const vector<float> &a, const vector<float> &b)
-{
-	return a[1]<b[1];
 }
 
 
